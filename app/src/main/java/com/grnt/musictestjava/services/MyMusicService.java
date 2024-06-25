@@ -8,10 +8,13 @@ import android.content.pm.PackageManager;
 import android.media.browse.MediaBrowser;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.service.media.MediaBrowserService;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -26,6 +29,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -33,27 +37,36 @@ import androidx.media3.exoplayer.ExoPlayer;
 
 import com.grnt.musictestjava.MainActivity;
 import com.grnt.musictestjava.R;
+import com.grnt.musictestjava.SongManager;
+import com.grnt.musictestjava.model.Song;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyMusicService extends MediaBrowserServiceCompat {
     private static MediaSessionCompat mediaSession;
     private ExoPlayer player;
+    private SongManager songManager;
 
     @OptIn(markerClass = UnstableApi.class)
     @Override
     public void onCreate() {
         super.onCreate();
+        songManager = new SongManager();
         mediaSession = new MediaSessionCompat(this, "MyMusicService");
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onPlay() {
                 super.onPlay();
-                startService(new Intent(getApplicationContext(), MyMusicService.class));
-                mediaSession.setActive(true);
-                player.play();
-                updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
-                showNotification();
+                Song song = songManager.getSongs().get(0);
+                if (song != null) {
+                    player.prepare();
+                    player.play();
+                    mediaSession.setActive(true);
+                    updateMetadata(song);
+                    updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                    showNotification();
+                }
             }
 
             @Override
@@ -69,7 +82,6 @@ public class MyMusicService extends MediaBrowserServiceCompat {
                 super.onStop();
                 player.stop();
                 mediaSession.setActive(false);
-                stopSelf();
                 updatePlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 stopSelf();
             }
@@ -78,6 +90,11 @@ public class MyMusicService extends MediaBrowserServiceCompat {
             public void onSkipToNext() {
                 super.onSkipToNext();
                 // Logic to skip to the next track
+                player.seekToNext();
+                MediaItem item  = player.getCurrentMediaItem();
+                Song _song = songManager.getSongById(item.mediaId);
+                updateMetadata(_song);
+
                 updatePlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_NEXT);
                 showNotification();
             }
@@ -86,9 +103,34 @@ public class MyMusicService extends MediaBrowserServiceCompat {
             public void onSkipToPrevious() {
                 super.onSkipToPrevious();
                 // Logic to skip to the previous track
+                player.seekToPrevious();
+                MediaItem item  = player.getCurrentMediaItem();
+                Song _song = songManager.getSongById(item.mediaId);
+                updateMetadata(_song);
+
                 updatePlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS);
                 showNotification();
             }
+            @Override
+            public void onSeekTo(long pos) {
+                super.onSeekTo(pos);
+                player.seekTo(pos);
+                updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
+            }
+            @Override
+            public void onPlayFromMediaId(String mediaId, Bundle extras) {
+                super.onPlayFromMediaId(mediaId, extras);
+                Song song = songManager.getSongById(mediaId);
+                if (song != null) {
+                    MediaItem mediaItem = MediaItem.fromUri(song.getUrl());
+                    player.setMediaItem(mediaItem);
+                    player.prepare();
+                    player.play();
+                    updateMetadata(song);
+                }
+            }
+
+
         });
 
         setSessionToken(mediaSession.getSessionToken());
@@ -104,6 +146,15 @@ public class MyMusicService extends MediaBrowserServiceCompat {
         });
     }
 
+    private void updateMetadata(Song song) {
+        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, song.getId())
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getTitle())
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.getArtist())
+                .build();
+        mediaSession.setMetadata(metadata);
+        //showNotification();
+    }
 
 
     private void updatePlaybackState(int state) {
@@ -169,8 +220,19 @@ public class MyMusicService extends MediaBrowserServiceCompat {
 
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-        result.sendResult(null);
+        List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
+        for (Song song : songManager.getSongs()) {
+            MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
+                    .setMediaId(song.getId())
+                    .setTitle(song.getTitle())
+                    .setSubtitle(song.getArtist())
+                    .build();
+            mediaItems.add(new MediaBrowserCompat.MediaItem(description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE));
+        }
+        //result.sendResult(mediaItems);
+        result.sendResult(null); // Loa
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -179,22 +241,26 @@ public class MyMusicService extends MediaBrowserServiceCompat {
         String action = intent.getAction();
         if (action != null) {
             switch (action) {
+                case "ACTION_PREPARE":
+                    Bundle bundle2 = intent.getExtras();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        assert bundle2 != null;
+                        songManager = bundle2.getSerializable("manager",SongManager.class);
+                    }
+                    addSongs(songManager.getSongs());
+                    break;
                 case "ACTION_PLAY":
-                    String url = intent.getStringExtra("URL");
-                    if (url != null) {
-                        MediaItem mediaItem = MediaItem.fromUri(url);
+                    Bundle bundle = intent.getExtras();
+                    Song song = songManager.getSongs().get(0);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        assert bundle != null;
+                        song = bundle.getSerializable("song",Song.class);
+                    }
+                    updateMetadata(song);
+                    MediaItem mediaItem = MediaItem.fromUri(song.getUrl());
                         player.setMediaItem(mediaItem);
                         player.prepare();
-
-                        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
-                                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "id")
-                                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "title")
-                                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "artist")
-                                .build();
-                        mediaSession.setMetadata(metadata);
-
                         mediaSession.getController().getTransportControls().play();
-                    }
                     break;
                 case "ACTION_PAUSE":
                     mediaSession.getController().getTransportControls().pause();
@@ -204,7 +270,22 @@ public class MyMusicService extends MediaBrowserServiceCompat {
 
         return START_STICKY;
     }
-
+    public void addSongs(ArrayList<Song> songs) {
+        for (Song song : songs) {
+            MediaItem mediaItem = new MediaItem.Builder()
+                    .setUri(Uri.parse(song.getUrl()))
+                    .setMediaId(song.getId())
+                    .setMediaMetadata(new MediaMetadata.Builder()
+                            .setTitle(song.getTitle())
+                            .setArtist(song.getArtist())
+                            .build())
+                    .build();
+            player.addMediaItem(mediaItem);
+        }
+        player.prepare();
+        // Notify any active MediaBrowser clients to reload the media items
+        mediaSession.sendSessionEvent("mediaItemsUpdated", null);
+    }
     @Override
     public void onDestroy() {
         mediaSession.release();

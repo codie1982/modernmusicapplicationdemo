@@ -7,34 +7,36 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.media3.ui.PlayerView
-        android:id="@+id/player_view"
+    <ListView
+        android:id="@+id/lstSong"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="16dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnOpenPlayer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/play_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Play" />
+    <Button
+        android:id="@+id/btnLoadSongs"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="32dp"
+        android:text="Load Songs"
+        app:layout_constraintBottom_toBottomOf="@+id/btnOpenPlayer"
+        app:layout_constraintEnd_toStartOf="@+id/btnOpenPlayer"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnOpenPlayer" />
 
-        <Button
-            android:id="@+id/pause_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pause" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/btnOpenPlayer"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:text="Open Player"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

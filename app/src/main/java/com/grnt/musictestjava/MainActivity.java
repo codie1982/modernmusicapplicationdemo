@@ -4,26 +4,40 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.media.session.MediaSession;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.grnt.musictestjava.model.Song;
 import com.grnt.musictestjava.services.MyMusicService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private MediaBrowserCompat mediaBrowser;
-
+    private ListView lstSong;
+    private ArrayAdapter<String> adapter;
+    private SongManager songManager;
+    private List<Song> songList = new ArrayList<>();
+    private Button btnOpenPlayer,btnLoadSongs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     "CHANNEL_ID",
@@ -43,8 +58,17 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-        Button playButton = findViewById(R.id.play_button);
-        Button pauseButton = findViewById(R.id.pause_button);
+        lstSong = findViewById(R.id.lstSong);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        lstSong.setAdapter(adapter);
+
+        btnOpenPlayer = findViewById(R.id.btnOpenPlayer);
+        btnOpenPlayer.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this,PlayerActivity.class);
+            startActivity(intent);
+        });
+        btnLoadSongs = findViewById(R.id.btnLoadSongs);
+
         mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MyMusicService.class),
                 new MediaBrowserCompat.ConnectionCallback() {
@@ -53,8 +77,19 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             MediaControllerCompat mediaController = new MediaControllerCompat(MainActivity.this, mediaBrowser.getSessionToken());
                             MediaControllerCompat.setMediaController(MainActivity.this, mediaController);
-                            updateUI();
-                            mediaController.registerCallback(controllerCallback);
+                            mediaBrowser.subscribe(mediaBrowser.getRoot(), subscriptionCallback);
+
+                            SongManager songManager1 = new SongManager();
+                            String url1 = "https://rr6---sn-u0g3uxax3-pnul.googlevideo.com/videoplayback?expire=1719244334&ei=zkF5ZtmPEq2svdIPxp65gAQ&ip=144.76.140.134&id=o-ADUh024WOhoS_jyA-aIM8BfhQ0Uf20aPriNo6a4fhzhX&itag=140&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&vprv=1&svpuc=1&mime=audio%2Fmp4&rqh=1&gir=yes&clen=1081309&dur=66.757&lmt=1676287343425989&keepalive=yes&c=ANDROID_TESTSUITE&txp=5432434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgIXlzkAeeZr1mr8dg0wj6VaqswbxDxf8sdZmsMrhdw-ECIGRBqbASfP7JOht3MKXTFoV3RZ0jG_hWiYe-xIAQh965&redirect_counter=1&rm=sn-4g5ekz7l&fexp=24350485&req_id=4282feb44d5fa3ee&cms_redirect=yes&cmsv=e&ipbypass=yes&mh=oK&mip=78.181.37.209&mm=31&mn=sn-u0g3uxax3-pnul&ms=au&mt=1719222537&mv=m&mvi=6&pl=24&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AHlkHjAwRQIhAMdYD9zbdUhb7nISZmyOCKSnK3HD0XR6cxjuiBiiTstqAiAXXEcRv6wCG6W-B8IOIdoJmuW8Bu4F1QMfOLNukKPg8Q%3D%3D";
+                            String url2 = "https://rr4---sn-u0g3uxax3-pnuz.googlevideo.com/videoplayback?expire=1719244417&ei=IUJ5ZtnnOJPD6dsPyqS1iAc&ip=23.88.68.133&id=o-ADwLuskWv_UL_Yo7WIdetoksx602EzaBeWpmV5XjGvPi&itag=140&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&vprv=1&svpuc=1&mime=audio%2Fmp4&rqh=1&gir=yes&clen=3828135&dur=236.495&lmt=1548209419771165&keepalive=yes&c=ANDROID_TESTSUITE&txp=5535432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgcumvtBn-hdkJSNtKQgU_R0WWnAoovSZ8HeijfwHczpwCIDyhVZSJXm9xSRMhykkXBe89SBWCa2VBjAs91VVgFV5k&redirect_counter=1&rm=sn-4g5ek67z&fexp=24350485&req_id=ea7adeac21c7a3ee&cms_redirect=yes&cmsv=e&ipbypass=yes&mh=BL&mip=78.181.37.209&mm=31&mn=sn-u0g3uxax3-pnuz&ms=au&mt=1719222537&mv=m&mvi=4&pl=24&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AHlkHjAwRgIhAP_GCkAbBDi-Cs404jctWZht53a5bUiL2OnaD0iuJRWiAiEA3WwsY-8TD7IObMuMDT_hXF0I9uBCE8UmNFPxTcIf088%3D";
+
+                            songManager1.addSong(new Song("1", "Song Title 1", "Artist 1", url1));
+                            songManager1.addSong(new Song("2", "Song Title 2", "Artist 2", url2));
+                            Intent intent = new Intent(MainActivity.this, MyMusicService.class);
+                            intent.setAction("ACTION_PREPARE");
+                            intent.putExtra("manager",songManager1);
+                            startService(intent);
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -70,41 +105,43 @@ public class MainActivity extends AppCompatActivity {
                         // The Service has refused our connection
                     }
                 }, null);
-        playButton.setOnClickListener(v -> {
-                    String url = "https://rr2---sn-4g5e6nsy.googlevideo.com/videoplayback?expire=1719194578&ei=cn94ZqWGD5rj6dsP1MiIiAk&ip=142.132.205.100&id=o-AFgNDnZ6UsVI1uS_xNL7xzpPr25vKhsg74Yos-TeJWKH&itag=140&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&vprv=1&svpuc=1&mime=audio%2Fmp4&rqh=1&gir=yes&clen=1081309&dur=66.757&lmt=1676287343425989&keepalive=yes&c=ANDROID_TESTSUITE&txp=5432434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRQIhAPUxXBgTtt0pqgtaYjvG03pgoNjWTbCuDf9UtTddMvaXAiBt0TT3H5aArKWrkd5feTFbcwPdoeNecmlYChB3MtIM7Q%3D%3D&rm=sn-4g5ekz7l&fexp=24350485&req_id=7da21620e91aa3ee&ipbypass=yes&cm2rm=sn-u0g3uxax3-pnul7d,sn-hgnly7e&redirect_counter=3&cms_redirect=yes&cmsv=e&mh=oK&mip=78.181.37.209&mm=34&mn=sn-4g5e6nsy&ms=ltu&mt=1719172834&mv=m&mvi=2&pl=24&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AHlkHjAwRQIhAOWQ4THnu7Dq4lo38Wej5NxsGUtHOKdwgQEEO-9IGGrVAiAuXRNkJrSj88zYYPirSzjPQBNidznY9JQ-0saDQNSnng%3D%3D";
-                    if (!url.isEmpty()) {
-                        Intent intent = new Intent(MainActivity.this, MyMusicService.class);
-                        intent.setAction("ACTION_PLAY");
-                        intent.putExtra("URL", url);
-                        startService(intent);
-                    }
-                }
-        );
 
-        pauseButton.setOnClickListener(v ->
-        {
-            Intent intent = new Intent(MainActivity.this, MyMusicService.class);
-            intent.setAction("ACTION_PAUSE");
-            startService(intent);
-        });
     }
+    private final MediaBrowserCompat.SubscriptionCallback subscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
+        @Override
+        public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+            ArrayList<Song> newSongs = new ArrayList<>();
+            newSongs.add(new Song("1", "Song Title 1", "Artist 1", "https://www.example.com/song1.mp3"));
+            newSongs.add(new Song("2", "Song Title 2", "Artist 2", "https://www.example.com/song2.mp3"));
+            // Load more songs as needed
 
-    private void updateUI() {
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(MainActivity.this);
-        if (mediaController != null) {
-            PlaybackStateCompat state = mediaController.getPlaybackState();
-            if (state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-                //playPauseButton.setText("Pause");
-            } else {
-                //playPauseButton.setText("Play");
+            //MyMusicService service = new MyMusicService();
+            //service.addSongs(newSongs);
+
+          /*  songManager = new SongManager();
+            String url1 = "https://rr6---sn-u0g3uxax3-pnul.googlevideo.com/videoplayback?expire=1719244334&ei=zkF5ZtmPEq2svdIPxp65gAQ&ip=144.76.140.134&id=o-ADUh024WOhoS_jyA-aIM8BfhQ0Uf20aPriNo6a4fhzhX&itag=140&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&vprv=1&svpuc=1&mime=audio%2Fmp4&rqh=1&gir=yes&clen=1081309&dur=66.757&lmt=1676287343425989&keepalive=yes&c=ANDROID_TESTSUITE&txp=5432434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgIXlzkAeeZr1mr8dg0wj6VaqswbxDxf8sdZmsMrhdw-ECIGRBqbASfP7JOht3MKXTFoV3RZ0jG_hWiYe-xIAQh965&redirect_counter=1&rm=sn-4g5ekz7l&fexp=24350485&req_id=4282feb44d5fa3ee&cms_redirect=yes&cmsv=e&ipbypass=yes&mh=oK&mip=78.181.37.209&mm=31&mn=sn-u0g3uxax3-pnul&ms=au&mt=1719222537&mv=m&mvi=6&pl=24&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AHlkHjAwRQIhAMdYD9zbdUhb7nISZmyOCKSnK3HD0XR6cxjuiBiiTstqAiAXXEcRv6wCG6W-B8IOIdoJmuW8Bu4F1QMfOLNukKPg8Q%3D%3D";
+            String url2 = "https://rr4---sn-u0g3uxax3-pnuz.googlevideo.com/videoplayback?expire=1719244417&ei=IUJ5ZtnnOJPD6dsPyqS1iAc&ip=23.88.68.133&id=o-ADwLuskWv_UL_Yo7WIdetoksx602EzaBeWpmV5XjGvPi&itag=140&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&vprv=1&svpuc=1&mime=audio%2Fmp4&rqh=1&gir=yes&clen=3828135&dur=236.495&lmt=1548209419771165&keepalive=yes&c=ANDROID_TESTSUITE&txp=5535432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Crqh%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgcumvtBn-hdkJSNtKQgU_R0WWnAoovSZ8HeijfwHczpwCIDyhVZSJXm9xSRMhykkXBe89SBWCa2VBjAs91VVgFV5k&redirect_counter=1&rm=sn-4g5ek67z&fexp=24350485&req_id=ea7adeac21c7a3ee&cms_redirect=yes&cmsv=e&ipbypass=yes&mh=BL&mip=78.181.37.209&mm=31&mn=sn-u0g3uxax3-pnuz&ms=au&mt=1719222537&mv=m&mvi=4&pl=24&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AHlkHjAwRgIhAP_GCkAbBDi-Cs404jctWZht53a5bUiL2OnaD0iuJRWiAiEA3WwsY-8TD7IObMuMDT_hXF0I9uBCE8UmNFPxTcIf088%3D";
+            // Şarkı listesi ekleyin
+            songManager.addSong(new Song("1", "Song Title 1", "Artist 1", url1));
+            songManager.addSong(new Song("2", "Song Title 2", "Artist 2", url2));
+            adapter.clear();
+            songList.clear();
+            List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
+            for (Song song : songManager.getSongs()) {
+                MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
+                        .setMediaId(song.getId())
+                        .setMediaUri(Uri.parse(song.getUrl()))
+                        .setTitle(song.getTitle())
+                        .setSubtitle(song.getArtist())
+                        .build();
+                mediaItems.add(new MediaBrowserCompat.MediaItem(description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE));
+
+                adapter.add(description.getTitle().toString());
             }
 
-            MediaMetadataCompat metadata = mediaController.getMetadata();
-            if (metadata != null) {
-                //songTitle.setText(metadata.getDescription().getTitle());
-            }
+            adapter.notifyDataSetChanged();*/
         }
-    }
+    };
 
     @Override
     protected void onStart() {
@@ -115,16 +152,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (MediaControllerCompat.getMediaController(this) != null) {
-            MediaControllerCompat.getMediaController(this).unregisterCallback(controllerCallback);
-        }
         mediaBrowser.disconnect();
     }
 
-    private MediaControllerCompat.Callback controllerCallback = new MediaControllerCompat.Callback() {
-        @Override
-        public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            // Update your UI based on playback state
-        }
-    };
 }
