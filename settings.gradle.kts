@@ -1,5 +1,7 @@
 
 pluginManagement {
+    plugins{
+    }
     repositories {
         google {
             content {

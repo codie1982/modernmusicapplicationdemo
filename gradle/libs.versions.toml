@@ -1,20 +1,26 @@
 #    implementation 'androidx.media:media:1.6.0'
 #    implementation 'com.google.android.exoplayer:exoplayer:2.15.1'
 [versions]
-agp = "8.4.0"
+agp = "8.4.2"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-appcompat = "1.6.1"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.9.0"
 media = "1.7.0"
 constraintlayout = "2.1.4"
 media3Exoplayer = "1.3.1"
 safeargsver = "2.7.7"
-hiltver = "2.44"
+hilt = "2.44"
 navigationFragment = "2.7.7"
 navigationUi = "2.7.7"
+gradleplugin = "8.4.2"
+kotlin = "1.9.23"
+room = "2.6.1"
+compose = "1.1.1"
+lifecycle = "2.6.1"
+navigation = "2.5.3"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -28,11 +34,35 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
 media3-exoplayer-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3Exoplayer" }
 media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hiltver" }
+dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+
+
+android-material = { module = "com.google.android.material:material", version.ref = "material" }
+androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
+androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+
+
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+#android-test-junit4 = { module = "androidx.test.ext:junit:1.1.3", version = "1.2.1" }
+gson = "com.google.code.gson:gson:2.9.0"
+
+[bundles]
+feature-ui = ["android-material", "androidx-navigation-fragment", "androidx-lifecycle-livedata", "androidx-lifecycle-viewmodel"]
+room = ["room-ktx", "room-paging", "room-runtime"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 safeargs = { id = "androidx.navigation.safeargs" , version.ref="safeargsver"}
+android-library = { id = "com.android.library", version.ref = "gradleplugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
 
