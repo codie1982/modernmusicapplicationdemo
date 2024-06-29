@@ -47,10 +47,6 @@ public class MainActivity extends BaseActivity {
             return insets;
         });
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.main,new FirstFragment());
-        fragmentTransaction.commit();
-
 
 
 
