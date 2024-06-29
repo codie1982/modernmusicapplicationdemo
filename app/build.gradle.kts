@@ -4,6 +4,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id ("kotlin-kapt")
     kotlin("kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -30,9 +31,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility =  JavaVersion.VERSION_11
     }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
     buildFeatures {
         viewBinding = true
     }
@@ -81,6 +87,10 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.1")
     implementation("androidx.compose.material:material-icons-extended:1.5.0")
 
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+
+    implementation("com.google.firebase:firebase-firestore")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -92,8 +102,6 @@ dependencies {
     implementation (libs.bundles.room)
     implementation(libs.bundles.feature.ui)
 
-    implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
 
     implementation (libs.gson)
 

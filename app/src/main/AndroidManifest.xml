@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
     <application
+        android:name="MusicApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,11 +20,11 @@
         android:theme="@style/Theme.MusicTestJava"
         tools:targetApi="31">
         <activity
-            android:name=".PlayerActivity"
+            android:name=".ui.PlayerActivity"
             android:exported="false"
             android:theme="@style/Theme.MusicTestJava" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,7 +43,7 @@
         </service>
 
         <receiver
-            android:name=".MediaButtonReceiver"
+            android:name=".receiver.MediaButtonReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

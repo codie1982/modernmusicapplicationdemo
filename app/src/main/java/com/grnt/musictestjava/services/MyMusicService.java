@@ -1,18 +1,12 @@
 package com.grnt.musictestjava.services;
 
 import android.Manifest;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.browse.MediaBrowser;
-import android.media.session.MediaSession;
-import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.service.media.MediaBrowserService;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -35,9 +29,8 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 
 
-import com.grnt.musictestjava.MainActivity;
 import com.grnt.musictestjava.R;
-import com.grnt.musictestjava.SongManager;
+import com.grnt.musictestjava.util.SongManager;
 import com.grnt.musictestjava.model.Song;
 
 import java.util.ArrayList;

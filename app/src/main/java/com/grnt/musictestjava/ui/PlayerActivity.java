@@ -1,10 +1,7 @@
-package com.grnt.musictestjava;
+package com.grnt.musictestjava.ui;
 
 import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,7 +9,6 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -21,8 +17,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.grnt.musictestjava.R;
 import com.grnt.musictestjava.databinding.ActivityPlayerBinding;
-import com.grnt.musictestjava.model.Song;
 import com.grnt.musictestjava.services.MyMusicService;
 
 public class PlayerActivity extends AppCompatActivity {

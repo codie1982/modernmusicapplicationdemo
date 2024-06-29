@@ -1,4 +1,4 @@
-package com.grnt.musictestjava;
+package com.grnt.musictestjava.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.grnt.musictestjava.R;
 import com.grnt.musictestjava.databinding.FragmentSecondBinding;
 
 public class SecondFragment extends Fragment {

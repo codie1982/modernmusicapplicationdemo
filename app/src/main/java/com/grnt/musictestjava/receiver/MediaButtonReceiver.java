@@ -1,4 +1,4 @@
-package com.grnt.musictestjava;
+package com.grnt.musictestjava.receiver;
 
 import android.content.Context;
 import android.content.Intent;

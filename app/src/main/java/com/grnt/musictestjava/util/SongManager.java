@@ -1,10 +1,9 @@
-package com.grnt.musictestjava;
+package com.grnt.musictestjava.util;
 
 import com.grnt.musictestjava.model.Song;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SongManager implements Serializable {
     private ArrayList<Song> songList;

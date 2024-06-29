@@ -1,43 +1,41 @@
-package com.grnt.musictestjava;
+package com.grnt.musictestjava.ui;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.media.session.MediaSession;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaDescriptionCompat;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.grnt.musictestjava.BaseActivity;
+import com.grnt.musictestjava.R;
+import com.grnt.musictestjava.util.SongManager;
 import com.grnt.musictestjava.model.Song;
 import com.grnt.musictestjava.services.MyMusicService;
+import com.grnt.musictestjava.viewmodel.MediaViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private MediaBrowserCompat mediaBrowser;
     private ListView lstSong;
     private ArrayAdapter<String> adapter;
     private SongManager songManager;
     private List<Song> songList = new ArrayList<>();
     private Button btnOpenPlayer,btnLoadSongs;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,27 +47,15 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    "CHANNEL_ID",
-                    "Music Player",
-                    NotificationManager.IMPORTANCE_LOW
-            );
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
-        lstSong = findViewById(R.id.lstSong);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        lstSong.setAdapter(adapter);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main,new FirstFragment());
+        fragmentTransaction.commit();
 
-        btnOpenPlayer = findViewById(R.id.btnOpenPlayer);
-        btnOpenPlayer.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,PlayerActivity.class);
-            startActivity(intent);
-        });
-        btnLoadSongs = findViewById(R.id.btnLoadSongs);
 
-        mediaBrowser = new MediaBrowserCompat(this,
+
+
+
+       /* mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MyMusicService.class),
                 new MediaBrowserCompat.ConnectionCallback() {
                     @Override
@@ -104,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onConnectionFailed() {
                         // The Service has refused our connection
                     }
-                }, null);
+                }, null);*/
 
     }
     private final MediaBrowserCompat.SubscriptionCallback subscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
@@ -146,13 +132,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mediaBrowser.connect();
+        //mediaBrowser.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mediaBrowser.disconnect();
+        //mediaBrowser.disconnect();
     }
 
 }
