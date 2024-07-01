@@ -115,7 +115,7 @@ public class MyMusicService extends MediaBrowserServiceCompat {
                 super.onPlayFromMediaId(mediaId, extras);
                 Song song = songManager.getSongById(mediaId);
                 if (song != null) {
-                    MediaItem mediaItem = MediaItem.fromUri(song.getUrl());
+                    MediaItem mediaItem = MediaItem.fromUri(song.getStreamurl());
                     player.setMediaItem(mediaItem);
                     player.prepare();
                     player.play();
@@ -142,7 +142,7 @@ public class MyMusicService extends MediaBrowserServiceCompat {
     private void updateMetadata(Song song) {
         MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, song.getId())
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getTitle())
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getName())
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.getArtist())
                 .build();
         mediaSession.setMetadata(metadata);
@@ -217,7 +217,7 @@ public class MyMusicService extends MediaBrowserServiceCompat {
         for (Song song : songManager.getSongs()) {
             MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
                     .setMediaId(song.getId())
-                    .setTitle(song.getTitle())
+                    .setTitle(song.getName())
                     .setSubtitle(song.getArtist())
                     .build();
             mediaItems.add(new MediaBrowserCompat.MediaItem(description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE));
@@ -250,7 +250,7 @@ public class MyMusicService extends MediaBrowserServiceCompat {
                         song = bundle.getSerializable("song",Song.class);
                     }
                     updateMetadata(song);
-                    MediaItem mediaItem = MediaItem.fromUri(song.getUrl());
+                    MediaItem mediaItem = MediaItem.fromUri(song.getStreamurl());
                         player.setMediaItem(mediaItem);
                         player.prepare();
                         mediaSession.getController().getTransportControls().play();
@@ -266,10 +266,10 @@ public class MyMusicService extends MediaBrowserServiceCompat {
     public void addSongs(ArrayList<Song> songs) {
         for (Song song : songs) {
             MediaItem mediaItem = new MediaItem.Builder()
-                    .setUri(Uri.parse(song.getUrl()))
+                    .setUri(Uri.parse(song.getStreamurl()))
                     .setMediaId(song.getId())
                     .setMediaMetadata(new MediaMetadata.Builder()
-                            .setTitle(song.getTitle())
+                            .setTitle(song.getName())
                             .setArtist(song.getArtist())
                             .build())
                     .build();

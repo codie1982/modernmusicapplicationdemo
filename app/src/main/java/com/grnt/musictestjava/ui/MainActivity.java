@@ -1,10 +1,7 @@
 package com.grnt.musictestjava.ui;
 
-import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -14,15 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.grnt.musictestjava.BaseActivity;
 import com.grnt.musictestjava.R;
 import com.grnt.musictestjava.util.SongManager;
 import com.grnt.musictestjava.model.Song;
-import com.grnt.musictestjava.services.MyMusicService;
-import com.grnt.musictestjava.viewmodel.MediaViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +39,6 @@ public class MainActivity extends BaseActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-
-
 
 
        /* mediaBrowser = new MediaBrowserCompat(this,
@@ -93,8 +83,8 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
             ArrayList<Song> newSongs = new ArrayList<>();
-            newSongs.add(new Song("1", "Song Title 1", "Artist 1", "https://www.example.com/song1.mp3"));
-            newSongs.add(new Song("2", "Song Title 2", "Artist 2", "https://www.example.com/song2.mp3"));
+            //newSongs.add(new Song("1", "Song Title 1", "Artist 1", "https://www.example.com/song1.mp3"));
+            //newSongs.add(new Song("2", "Song Title 2", "Artist 2", "https://www.example.com/song2.mp3"));
             // Load more songs as needed
 
             //MyMusicService service = new MyMusicService();

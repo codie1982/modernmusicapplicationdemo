@@ -2,24 +2,40 @@ package com.grnt.musictestjava.mvvm.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.auth.User
 import com.grnt.musictestjava.model.Album
 
+
+private const val ALBUM = "Album"
+
 class AlbumRepository {
-    val firestore : FirebaseFirestore = FirebaseFirestore.getInstance();
-    private val albumCollection = firestore.collection("album")
-    fun getAlbum(): LiveData<List<Album>> {
-        val albumLiveData = MutableLiveData<List<Album>>()
+    val firestore: FirebaseFirestore = FirebaseFirestore.getInstance();
+    private val albumCollection = firestore.collection(ALBUM)
 
-        albumCollection.get().addOnSuccessListener { result ->
-            val albumList = mutableListOf<Album>()
-            for (document in result) {
-                val album = document.toObject(Album::class.java)
-                albumList.add(album)
+    fun getAlbum(): Task<List<Album>> {
+        return albumCollection.get().continueWith { task: Task<QuerySnapshot> ->
+            val albumList: MutableList<Album> = ArrayList()
+            if (task.isSuccessful) {
+                for (document in task.result) {
+                    val album =   document.let {
+                       Album(
+                            document.id,
+                            document.getString("albumName")!!,
+                            document.getString("artistName")!!,
+                            document.getString("category")!!
+                        )
+                    }
+                    if (album != null) {
+                        albumList.add(album)
+                    }
+                }
+
             }
-            albumLiveData.value = albumList
+            albumList
         }
-        return albumLiveData
     }
-
 }
+
