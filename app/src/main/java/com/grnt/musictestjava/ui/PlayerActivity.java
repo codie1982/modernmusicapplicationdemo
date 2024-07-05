@@ -134,8 +134,9 @@ public class PlayerActivity extends AppCompatActivity {
     }
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_player);
+       /* NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_player);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
+                || super.onSupportNavigateUp();*/
+        return super.onSupportNavigateUp();
     }
 }

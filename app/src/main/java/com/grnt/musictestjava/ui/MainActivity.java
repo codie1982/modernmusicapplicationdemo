@@ -2,6 +2,7 @@ package com.grnt.musictestjava.ui;
 
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
+import android.telephony.SmsManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -11,9 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.grnt.musictestjava.BaseActivity;
 import com.grnt.musictestjava.R;
+import com.grnt.musictestjava.model.Album;
+import com.grnt.musictestjava.mvvm.MusicViewModel;
 import com.grnt.musictestjava.util.SongManager;
 import com.grnt.musictestjava.model.Song;
 
@@ -39,7 +44,6 @@ public class MainActivity extends BaseActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
 
        /* mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MyMusicService.class),
@@ -77,7 +81,6 @@ public class MainActivity extends BaseActivity {
                         // The Service has refused our connection
                     }
                 }, null);*/
-
     }
     private final MediaBrowserCompat.SubscriptionCallback subscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
         @Override

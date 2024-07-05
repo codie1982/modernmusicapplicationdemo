@@ -92,6 +92,9 @@ dependencies {
 
     implementation("com.google.firebase:firebase-firestore")
 
+    implementation (libs.glide)
+
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
