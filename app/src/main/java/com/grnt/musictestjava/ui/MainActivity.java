@@ -5,6 +5,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.telephony.SmsManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -34,6 +36,7 @@ public class MainActivity extends BaseActivity {
     private Button btnOpenPlayer,btnLoadSongs;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +47,13 @@ public class MainActivity extends BaseActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.base_frame_layout, new BaseMotionFragment());
+        ft.commit();
+
+        //playerSection = findViewById(R.id.player_section);
 
        /* mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MyMusicService.class),

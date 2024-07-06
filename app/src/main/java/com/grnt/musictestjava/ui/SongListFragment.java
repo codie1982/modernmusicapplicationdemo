@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,9 +23,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.grnt.musictestjava.BaseFragment;
 import com.grnt.musictestjava.R;
+import com.grnt.musictestjava.adapter.song.ISongAdapter;
 import com.grnt.musictestjava.adapter.song.SongAdapter;
 import com.grnt.musictestjava.databinding.FragmentSonglistBinding;
+import com.grnt.musictestjava.feature.PlayerFeature;
 import com.grnt.musictestjava.model.Album;
 import com.grnt.musictestjava.model.Song;
 import com.grnt.musictestjava.mvvm.MusicViewModel;
@@ -32,8 +36,9 @@ import com.grnt.musictestjava.mvvm.MusicViewModel;
 import java.util.List;
 import java.util.Objects;
 
-public class SongListFragment extends Fragment {
+public class SongListFragment extends BaseFragment implements ISongAdapter {
 
+    LinearLayout playerSection;
     private FragmentSonglistBinding binding;
     private Album selectedAlbum;
     private ImageView imgAlbumImage;
@@ -47,12 +52,12 @@ public class SongListFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
         binding = FragmentSonglistBinding.inflate(inflater, container, false);
         imgAlbumImage = binding.imgAlbumImage;
         txtCategoryName = binding.txtCategoryName;
         txtAlbumName = binding.txtAlbumName;
         txtArtistName = binding.txtArtistName;
+
         return binding.getRoot();
 
     }
@@ -75,14 +80,12 @@ public class SongListFragment extends Fragment {
             txtCategoryName.setText(selectedAlbum.getCategory());
             rvSongList = binding.rvSongList;
 
-
-
             musicViewModel =new ViewModelProvider(this).get(MusicViewModel.class);
             musicViewModel.loadSongsFromAblumId(selectedAlbum.getAlbumid());
             musicViewModel.getSongs().observe(getViewLifecycleOwner(), new Observer<List<Song>>() {
                 @Override
                 public void onChanged(List<Song> songs) {
-                    songAdapter = new SongAdapter(songs);
+                    songAdapter = new SongAdapter(songs,SongListFragment.this);
                     rvSongList.setAdapter(songAdapter);
                     rvSongList.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
                 }
@@ -113,4 +116,8 @@ public class SongListFragment extends Fragment {
         binding = null;
     }
 
+    @Override
+    public void onClickItem() {
+        baseActivity.setPlayer();
+    }
 }

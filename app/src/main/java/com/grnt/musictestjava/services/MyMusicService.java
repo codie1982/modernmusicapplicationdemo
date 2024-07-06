@@ -174,15 +174,15 @@ public class MyMusicService extends MediaBrowserServiceCompat {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
                 .addAction(new NotificationCompat.Action(
-                        R.drawable.previous_icon,
+                        R.drawable.forward_icon_48,
                         "Previous",
                         MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)))
                 .addAction(new NotificationCompat.Action(
-                        state.getState() == PlaybackStateCompat.STATE_PLAYING ? R.drawable.pause_icon : R.drawable.play_icon,
+                        state.getState() == PlaybackStateCompat.STATE_PLAYING ? R.drawable.pause_icon_48 : R.drawable.play_icon_48,
                         state.getState() == PlaybackStateCompat.STATE_PLAYING ? "Pause" : "Play",
                         MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY_PAUSE)))
                 .addAction(new NotificationCompat.Action(
-                        R.drawable.next_icon,
+                        R.drawable.next_icon_48,
                         "Next",
                         MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)))
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
